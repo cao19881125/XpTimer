@@ -221,6 +221,7 @@ function XpTimer:Frame_update()
     local exp_up = 0
     if(current_level == XpTimer.current_level) then
         exp_up = current_exp - XpTimer.start_exp
+        XpTimer.start_exp = current_exp
     else
         exp_up = current_exp + ( XpTimer.max_exp -  XpTimer.start_exp)
         XpTimer.start_exp = current_exp
@@ -228,7 +229,7 @@ function XpTimer:Frame_update()
         XpTimer.max_exp = UnitXPMax("player")
     end
 
-    XpTimer.all_exp = exp_up
+    XpTimer.all_exp = XpTimer.all_exp + exp_up
 
     local speed_exp_second = (XpTimer.all_exp/seconds)
     speed_exp_second = speed_exp_second * 100
