@@ -1,0 +1,9 @@
+## Interface: 11302
+## Title: XpTimer
+## Notes: A plugin to timing your gain experience speed
+## Author: YuntaoCao
+## Version: 1.0
+
+embeds.xml
+
+XpTimer.lua
