@@ -16,21 +16,29 @@ XpTimer.events:SetScript("OnEvent", function(self, event, ...)
 end)
 
 function XpTimer:insert_space(frame)
-    local target_label = AceGUI:Create("Label")
-    target_label:SetText("   ")
-    frame:AddChild(target_label)
+    --local target_label = AceGUI:Create("Label")
+    --target_label:SetText("   ")
+    --frame:AddChild(target_label)
+end
+
+local SCALE_LENGTH = 6
+local LABEL_SIZE = 12
+
+function XpTimer:ChangeFontSize(f,size)
+    local Font, Height, Flags = f.label:GetFont()
+    f.label:SetFont(Font, size, Flags)
 end
 
 function XpTimer:CreateMainWindow()
 
     local frame = AceGUI:Create("Frame")
     frame:SetTitle("经验统计")
-    frame:SetStatusText("当前状态:停止")
+    frame:SetStatusText("停止")
 
     frame:SetCallback("OnClose", function(widget) AceGUI:Release(widget) end)
     frame:SetLayout("List")
-    frame:SetWidth(400)
-    frame:SetHeight(340)
+    frame:SetWidth(42*SCALE_LENGTH)
+    frame:SetHeight(floor(36*SCALE_LENGTH))
     frame.frame:SetResizable(false)
 
 
@@ -38,12 +46,12 @@ function XpTimer:CreateMainWindow()
 
     local ctl_btn_group = AceGUI:Create("SimpleGroup")
     ctl_btn_group:SetLayout("Flow")
-    ctl_btn_group:SetWidth(380)
+    ctl_btn_group:SetWidth(floor(38*SCALE_LENGTH))
     frame:AddChild(ctl_btn_group)
 
     XpTimer.btn_start = AceGUI:Create("Button")
     XpTimer.btn_start:SetText("开始")
-    XpTimer.btn_start:SetWidth(172)
+    XpTimer.btn_start:SetWidth(floor(17*SCALE_LENGTH))
     XpTimer.btn_start:SetCallback("OnClick", XpTimer.OnStartBtn)
     ctl_btn_group:AddChild(XpTimer.btn_start)
 
@@ -56,7 +64,7 @@ function XpTimer:CreateMainWindow()
 
     XpTimer.btn_stop = AceGUI:Create("Button")
     XpTimer.btn_stop:SetText("结束")
-    XpTimer.btn_stop:SetWidth(172)
+    XpTimer.btn_stop:SetWidth(floor(17*SCALE_LENGTH))
     XpTimer.btn_stop:SetCallback("OnClick", XpTimer.OnStopBtn)
     XpTimer.btn_stop:SetDisabled(true)
     ctl_btn_group:AddChild(XpTimer.btn_stop)
@@ -67,12 +75,12 @@ function XpTimer:CreateMainWindow()
     -- target set group
     local target_set_group = AceGUI:Create("SimpleGroup")
     target_set_group:SetLayout("Flow")
-    target_set_group:SetWidth(380)
+    target_set_group:SetWidth(floor(38*SCALE_LENGTH))
     frame:AddChild(target_set_group)
 
     local tgt_set_label = AceGUI:Create("Label")
-    tgt_set_label:SetText("目标经验设置(经验/小时)")
-    tgt_set_label:SetWidth(200)
+    tgt_set_label:SetText("目标设置")
+    tgt_set_label:SetWidth(20*SCALE_LENGTH)
     target_set_group:AddChild(tgt_set_label)
 
     --local tgt_edt_group = AceGUI:Create("SimpleGroup")
@@ -81,7 +89,7 @@ function XpTimer:CreateMainWindow()
     --target_set_group:AddChild(tgt_edt_group)
 
     XpTimer.tgt_set_editbox = AceGUI:Create("EditBox")
-    XpTimer.tgt_set_editbox:SetWidth(160)
+    XpTimer.tgt_set_editbox:SetWidth(16*SCALE_LENGTH)
     XpTimer.tgt_set_editbox:SetCallback("OnEnterPressed", XpTimer.OnSetTargetBtn)
     target_set_group:AddChild(XpTimer.tgt_set_editbox)
 
@@ -95,31 +103,46 @@ function XpTimer:CreateMainWindow()
     XpTimer:insert_space(frame)
 
 
+    local target_time_group = AceGUI:Create("SimpleGroup")
+    target_time_group:SetLayout("Flow")
+    target_time_group:SetWidth(floor(38*SCALE_LENGTH))
+    frame:AddChild(target_time_group)
+
     -- information label
     XpTimer.target_label = AceGUI:Create("Label")
-    XpTimer.target_label:SetText("目标(经验/小时):0")
-    XpTimer.target_label:SetWidth(360)
-    frame:AddChild(XpTimer.target_label)
+    XpTimer.target_label:SetText("目标:0")
+    XpTimer.target_label:SetWidth(18*SCALE_LENGTH)
+    self:ChangeFontSize(XpTimer.target_label,LABEL_SIZE)
+    target_time_group:AddChild(XpTimer.target_label)
+
+    XpTimer.time_label = AceGUI:Create("Label")
+    XpTimer.time_label:SetText("时间:0分0秒")
+    XpTimer.time_label:SetWidth(18*SCALE_LENGTH)
+    self:ChangeFontSize(XpTimer.time_label,LABEL_SIZE)
+    target_time_group:AddChild(XpTimer.time_label)
 
     XpTimer:insert_space(frame)
 
     XpTimer.accumulate_label = AceGUI:Create("Label")
-    XpTimer.accumulate_label:SetText("累计时间:0分0秒   累计经验:0    累计数量:0")
-    XpTimer.accumulate_label:SetWidth(360)
+    XpTimer.accumulate_label:SetText("累计经验:0 数量:0")
+    XpTimer.accumulate_label:SetWidth(36*SCALE_LENGTH)
+    self:ChangeFontSize(XpTimer.accumulate_label,LABEL_SIZE)
     frame:AddChild(XpTimer.accumulate_label)
 
     XpTimer:insert_space(frame)
 
     XpTimer.update_level_label = AceGUI:Create("Label")
-    XpTimer.update_level_label:SetText("升级剩余时间:0分0秒   升级剩余经验:0")
-    XpTimer.update_level_label:SetWidth(360)
+    XpTimer.update_level_label:SetText("剩余时间:0分 经验:0")
+    XpTimer.update_level_label:SetWidth(36*SCALE_LENGTH)
+    self:ChangeFontSize(XpTimer.update_level_label,LABEL_SIZE)
     frame:AddChild(XpTimer.update_level_label)
 
     XpTimer:insert_space(frame)
 
     XpTimer.averge_label = AceGUI:Create("Label")
-    XpTimer.averge_label:SetText("平均一只怪经验:0   剩余击杀数量:0")
-    XpTimer.averge_label:SetWidth(360)
+    XpTimer.averge_label:SetText("平均经验:0 剩余数量:0")
+    XpTimer.averge_label:SetWidth(36*SCALE_LENGTH)
+    self:ChangeFontSize(XpTimer.averge_label,LABEL_SIZE)
     frame:AddChild(XpTimer.averge_label)
 
     XpTimer:insert_space(frame)
@@ -128,9 +151,10 @@ function XpTimer:CreateMainWindow()
     XpTimer.speed_icon:SetImage("Interface\\AddOns\\XpTimer\\textures\\gray")
     XpTimer.speed_icon.image:SetPoint("BOTTOMLEFT", 0, 0)
     XpTimer.speed_icon:SetLabel("速度:0/小时(%0)")
-    XpTimer.speed_icon:SetImageSize(360,30)
-    XpTimer.speed_icon:SetWidth(360)
-    XpTimer.speed_icon:SetHeight(30)
+    XpTimer.speed_icon:SetImageSize(36*SCALE_LENGTH,3*SCALE_LENGTH)
+    XpTimer.speed_icon:SetWidth(36*SCALE_LENGTH)
+    XpTimer.speed_icon:SetHeight(26)
+    self:ChangeFontSize(XpTimer.speed_icon,12)
     frame:AddChild(XpTimer.speed_icon)
 
     --frame:Show()
@@ -138,11 +162,12 @@ function XpTimer:CreateMainWindow()
 end
 
 function XpTimer:OnStartBtn()
+
     XpTimer.init_data()
     XpTimer.current_state = 2 -- 1:停止 2：运行中
     XpTimer.btn_start:SetDisabled(true)
     XpTimer.btn_stop:SetDisabled(false)
-    XpTimer.MainWindow:SetStatusText("当前状态:运行中")
+    XpTimer.MainWindow:SetStatusText("运行中")
 end
 
 --function XpTimer:OnPauseBtn()
@@ -154,13 +179,13 @@ function XpTimer:OnStopBtn()
     XpTimer.current_state = 1
     XpTimer.btn_start:SetDisabled(false)
     XpTimer.btn_stop:SetDisabled(true)
-    XpTimer.MainWindow:SetStatusText("当前状态:停止")
+    XpTimer.MainWindow:SetStatusText("停止")
 end
 
 function XpTimer:OnSetTargetBtn()
     local target = XpTimer.tgt_set_editbox:GetText()
     XpTimer.target_exp = tonumber(target)
-    XpTimer.target_label:SetText(string.format("目标(经验/小时):%d",XpTimer.target_exp))
+    XpTimer.target_label:SetText(string.format("目标:%d",XpTimer.target_exp))
 end
 
 
@@ -249,9 +274,10 @@ function XpTimer:Frame_update()
 
 
     -- update frame
-    XpTimer.accumulate_label:SetText(string.format("累计时间:%d分%d秒   累计经验:%d   累计数量:%d",ret_minutes,ret_seconds,XpTimer.all_exp,XpTimer.kill_num))
-    XpTimer.update_level_label:SetText(string.format("升级剩余时间:%d分%d秒   升级剩余经验:%d",time_to_up_min,floor(time_to_up_second%60),(XpTimer.max_exp - current_exp)))
-    XpTimer.averge_label:SetText(string.format("平均一只怪经验:%d   剩余击杀数量:%d",averge_exp,require_num))
+    XpTimer.time_label:SetText(string.format("时间:%d分%d秒",ret_minutes,ret_seconds))
+    XpTimer.accumulate_label:SetText(string.format("累计经验:%d 数量:%d",XpTimer.all_exp,XpTimer.kill_num))
+    XpTimer.update_level_label:SetText(string.format("剩余时间:%d分 经验:%d",time_to_up_min,(XpTimer.max_exp - current_exp)))
+    XpTimer.averge_label:SetText(string.format("平均经验:%d 剩余数量:%d",averge_exp,require_num))
 
 
     local icon_img = ""
@@ -274,14 +300,14 @@ function XpTimer:Frame_update()
     XpTimer.speed_icon:SetImage(icon_img)
     local icon_len = 0
     if(per >= 100)then
-        icon_len = 360
+        icon_len = 36*SCALE_LENGTH
     else
-        icon_len = floor(360*per/100)
+        icon_len = floor(36*SCALE_LENGTH*per/100)
     end
     XpTimer.speed_icon:SetLabel(string.format("速度:%d/小时(%%%d)",speed_exp_hour,per))
-    XpTimer.speed_icon:SetImageSize(icon_len,30)
-    XpTimer.speed_icon:SetWidth(360)
-    XpTimer.speed_icon:SetHeight(30)
+    XpTimer.speed_icon:SetImageSize(icon_len,3*SCALE_LENGTH)
+    XpTimer.speed_icon:SetWidth(36*SCALE_LENGTH)
+    XpTimer.speed_icon:SetHeight(3*SCALE_LENGTH)
 
 end
 
