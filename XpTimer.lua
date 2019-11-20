@@ -220,13 +220,10 @@ function XpTimer:TimerFeedback()
     if(XpTimer.current_state == 1)then
         return
     end
-
-    local current_time = GetTime()
-    if((current_time - XpTimer.last_update_time) < 3)then
-        return
-    end
+    
 
     XpTimer:Frame_update()
+
 
     if(XpTimer.current_state == 2)then
         C_Timer.After(3, XpTimer.TimerFeedback)
@@ -271,7 +268,6 @@ function XpTimer:init_data()
     XpTimer.current_level = UnitLevel("player")
     XpTimer.all_exp = 0
     XpTimer.kill_num = 0
-    XpTimer.last_update_time = GetTime()
 
 end
 
@@ -310,14 +306,20 @@ function XpTimer:Frame_update()
     local speed_exp_hour = speed_exp_second*3600
 
     -- level up time
-    local time_to_up_second = (XpTimer.max_exp - current_exp)/speed_exp_second
+    local time_to_up_second = 0
+    if(speed_exp_second >= 1)then
+        time_to_up_second = (XpTimer.max_exp - current_exp)/speed_exp_second
+    end
     local time_to_up_min = floor(time_to_up_second/60)
 
     -- kill_num
     --XpTimer.kill_num = XpTimer.kill_num + 1
-    local averge_exp = floor(XpTimer.all_exp/XpTimer.kill_num)
-    local require_num = (XpTimer.max_exp - current_exp)/averge_exp
-
+    local averge_exp = 0
+    local require_num = 0
+    if(XpTimer.kill_num >= 1)then
+        averge_exp = floor(XpTimer.all_exp/XpTimer.kill_num)
+        require_num = (XpTimer.max_exp - current_exp)/averge_exp
+    end
 
 
     -- update frame
@@ -356,7 +358,6 @@ function XpTimer:Frame_update()
     XpTimer.speed_icon:SetWidth(36*SCALE_LENGTH)
     XpTimer.speed_icon:SetHeight(26)
 
-    XpTimer.last_update_time = GetTime()
 end
 
 function XpTimer:PLAYER_XP_UPDATE()
