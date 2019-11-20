@@ -1,6 +1,7 @@
-XpTimer = LibStub("AceAddon-3.0"):NewAddon("XpTimer", "AceConsole-3.0","AceComm-3.0", "AceTimer-3.0")
+XpTimer = LibStub("AceAddon-3.0"):NewAddon("XpTimer","AceConsole-3.0","AceComm-3.0", "AceTimer-3.0")
 
 local XpTimer = _G.XpTimer
+local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
 
 local CreateFrame = CreateFrame
@@ -14,6 +15,25 @@ XpTimer.events:SetScript("OnEvent", function(self, event, ...)
 
 	XpTimer[event](XpTimer, ...)
 end)
+
+
+XpTimer.consoleOptions = {
+	name = "XpTimer",
+	type = 'group',
+	args = {
+		["show"] = {
+			order = 12,
+			name = "Show",
+			desc = "Shows the main window",
+			type = 'execute',
+			func = function()
+				message("hello world")
+			end,
+			dialogHidden = true
+		}
+	}
+}
+
 
 function XpTimer:insert_space(frame)
     --local target_label = AceGUI:Create("Label")
@@ -31,14 +51,14 @@ end
 
 function XpTimer:CreateMainWindow()
 
-    local frame = AceGUI:Create("Frame")
+    local frame = AceGUI:Create("Frame2")
     frame:SetTitle("经验统计")
-    frame:SetStatusText("停止")
+    --frame:SetStatusText("停止")
 
     frame:SetCallback("OnClose", function(widget) AceGUI:Release(widget) end)
     frame:SetLayout("List")
     frame:SetWidth(42*SCALE_LENGTH)
-    frame:SetHeight(floor(36*SCALE_LENGTH))
+    frame:SetHeight(floor(33*SCALE_LENGTH))
     frame.frame:SetResizable(false)
 
 
@@ -48,6 +68,7 @@ function XpTimer:CreateMainWindow()
     ctl_btn_group:SetLayout("Flow")
     ctl_btn_group:SetWidth(floor(38*SCALE_LENGTH))
     frame:AddChild(ctl_btn_group)
+    XpTimer.ctl_btn_group = ctl_btn_group
 
     XpTimer.btn_start = AceGUI:Create("Button")
     XpTimer.btn_start:SetText("开始")
@@ -77,11 +98,13 @@ function XpTimer:CreateMainWindow()
     target_set_group:SetLayout("Flow")
     target_set_group:SetWidth(floor(38*SCALE_LENGTH))
     frame:AddChild(target_set_group)
+    XpTimer.target_set_group = target_set_group
 
     local tgt_set_label = AceGUI:Create("Label")
     tgt_set_label:SetText("目标设置")
     tgt_set_label:SetWidth(20*SCALE_LENGTH)
     target_set_group:AddChild(tgt_set_label)
+    XpTimer.tgt_set_label = tgt_set_label
 
     --local tgt_edt_group = AceGUI:Create("SimpleGroup")
     --tgt_edt_group:SetWidth(360)
@@ -107,6 +130,7 @@ function XpTimer:CreateMainWindow()
     target_time_group:SetLayout("Flow")
     target_time_group:SetWidth(floor(38*SCALE_LENGTH))
     frame:AddChild(target_time_group)
+    XpTimer.target_time_group = target_time_group
 
     -- information label
     XpTimer.target_label = AceGUI:Create("Label")
@@ -157,6 +181,7 @@ function XpTimer:CreateMainWindow()
     self:ChangeFontSize(XpTimer.speed_icon,12)
     frame:AddChild(XpTimer.speed_icon)
 
+    frame.closebutton:Hide()
     --frame:Show()
     XpTimer.MainWindow = frame
 end
@@ -168,8 +193,8 @@ function XpTimer:OnStartBtn()
     XpTimer.btn_start:SetDisabled(true)
     XpTimer.btn_stop:SetDisabled(false)
     C_Timer.After(3, XpTimer.TimerFeedback)
-    XpTimer.MainWindow:SetStatusText("运行中")
-    
+    --XpTimer.MainWindow:SetStatusText("运行中")
+
 end
 
 --function XpTimer:OnPauseBtn()
@@ -181,7 +206,7 @@ function XpTimer:OnStopBtn()
     XpTimer.current_state = 1
     XpTimer.btn_start:SetDisabled(false)
     XpTimer.btn_stop:SetDisabled(true)
-    XpTimer.MainWindow:SetStatusText("停止")
+    --XpTimer.MainWindow:SetStatusText("停止")
 end
 
 function XpTimer:OnSetTargetBtn()
@@ -208,7 +233,10 @@ function XpTimer:TimerFeedback()
     end
 end
 
+
 function XpTimer:OnInitialize()
+
+    LibStub("AceConfig-3.0"):RegisterOptionsTable("XpTimer Blizz", XpTimer.consoleOptions,"XpTimer")
     XpTimer:CreateMainWindow()
 
     XpTimer.MainWindow:Show()
@@ -216,7 +244,6 @@ function XpTimer:OnInitialize()
 end
 
 function XpTimer:OnEnable()
-
     XpTimer.events:RegisterEvent("PLAYER_ENTERING_WORLD")
     XpTimer.events:RegisterEvent("PLAYER_XP_UPDATE")
     XpTimer.events:RegisterEvent("PLAYER_LEVEL_UP")
