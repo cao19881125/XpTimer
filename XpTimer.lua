@@ -167,7 +167,9 @@ function XpTimer:OnStartBtn()
     XpTimer.current_state = 2 -- 1:停止 2：运行中
     XpTimer.btn_start:SetDisabled(true)
     XpTimer.btn_stop:SetDisabled(false)
+    C_Timer.After(3, XpTimer.TimerFeedback)
     XpTimer.MainWindow:SetStatusText("运行中")
+    
 end
 
 --function XpTimer:OnPauseBtn()
@@ -188,6 +190,23 @@ function XpTimer:OnSetTargetBtn()
     XpTimer.target_label:SetText(string.format("目标:%d",XpTimer.target_exp))
 end
 
+function XpTimer:TimerFeedback()
+
+    if(XpTimer.current_state == 1)then
+        return
+    end
+
+    local current_time = GetTime()
+    if((current_time - XpTimer.last_update_time) < 3)then
+        return
+    end
+
+    XpTimer:Frame_update()
+
+    if(XpTimer.current_state == 2)then
+        C_Timer.After(3, XpTimer.TimerFeedback)
+    end
+end
 
 function XpTimer:OnInitialize()
     XpTimer:CreateMainWindow()
@@ -225,6 +244,7 @@ function XpTimer:init_data()
     XpTimer.current_level = UnitLevel("player")
     XpTimer.all_exp = 0
     XpTimer.kill_num = 0
+    XpTimer.last_update_time = GetTime()
 
 end
 
@@ -307,8 +327,9 @@ function XpTimer:Frame_update()
     XpTimer.speed_icon:SetLabel(string.format("速度:%d/小时(%d%%)",speed_exp_hour,per))
     XpTimer.speed_icon:SetImageSize(icon_len,3*SCALE_LENGTH)
     XpTimer.speed_icon:SetWidth(36*SCALE_LENGTH)
-    XpTimer.speed_icon:SetHeight(3*SCALE_LENGTH)
+    XpTimer.speed_icon:SetHeight(26)
 
+    XpTimer.last_update_time = GetTime()
 end
 
 function XpTimer:PLAYER_XP_UPDATE()
