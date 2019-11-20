@@ -304,7 +304,7 @@ function XpTimer:Frame_update()
     else
         icon_len = floor(36*SCALE_LENGTH*per/100)
     end
-    XpTimer.speed_icon:SetLabel(string.format("速度:%d/小时(%%%d)",speed_exp_hour,per))
+    XpTimer.speed_icon:SetLabel(string.format("速度:%d/小时(%d%%)",speed_exp_hour,per))
     XpTimer.speed_icon:SetImageSize(icon_len,3*SCALE_LENGTH)
     XpTimer.speed_icon:SetWidth(36*SCALE_LENGTH)
     XpTimer.speed_icon:SetHeight(3*SCALE_LENGTH)
