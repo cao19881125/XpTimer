@@ -195,7 +195,7 @@ function XpTimer:CreateMainWindow()
     XpTimer:insert_space(frame)
 
     XpTimer.update_level_label = AceGUI:Create("Label")
-    XpTimer.update_level_label:SetText("升级剩余时间:0分 剩余经验:0")
+    XpTimer.update_level_label:SetText("升级时间:0分 剩余经验:0")
     XpTimer.update_level_label:SetWidth(36*SCALE_LENGTH)
     self:ChangeFontSize(XpTimer.update_level_label,LABEL_SIZE)
     frame:AddChild(XpTimer.update_level_label)
@@ -203,7 +203,7 @@ function XpTimer:CreateMainWindow()
     XpTimer:insert_space(frame)
 
     XpTimer.averge_label = AceGUI:Create("Label")
-    XpTimer.averge_label:SetText("平均经验/击杀:0 剩余击杀数量:0")
+    XpTimer.averge_label:SetText("每怪经验:0 剩余怪数:0")
     XpTimer.averge_label:SetWidth(36*SCALE_LENGTH)
     self:ChangeFontSize(XpTimer.averge_label,LABEL_SIZE)
     frame:AddChild(XpTimer.averge_label)
@@ -375,8 +375,8 @@ function XpTimer:Frame_update()
     -- update frame
     XpTimer.time_label:SetText(string.format("时间:%d分%d秒",ret_minutes,ret_seconds))
     XpTimer.accumulate_label:SetText(string.format("累计经验:%d 击杀数量:%d",XpTimer.all_exp,XpTimer.kill_num))
-    XpTimer.update_level_label:SetText(string.format("升级剩余时间:%d分 剩余经验:%d",time_to_up_min,(XpTimer.max_exp - current_exp)))
-    XpTimer.averge_label:SetText(string.format("平均经验/击杀:%d 剩余击杀数量:%d",averge_exp,require_num))
+    XpTimer.update_level_label:SetText(string.format("升级时间:%d分 剩余经验:%d",time_to_up_min,(XpTimer.max_exp - current_exp)))
+    XpTimer.averge_label:SetText(string.format("每怪经验:%d 剩余怪数:%d",averge_exp,require_num))
 
 
     local icon_img = ""
