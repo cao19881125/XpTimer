@@ -24,3 +24,11 @@
 git clone 本项目或者下载压缩包，下载后将XpTimer目录解压到_classic_/Interface/AddOns下即可
 
 注意如果从github下载的压缩包，目录名会默认带上branch的前缀，下载后需要手动修改一下目录名为XpTimer
+
+## 命令
+### 打开命令
+点击关闭后，可以通过如下命令打开
+
+```
+/XpTimer show
+```

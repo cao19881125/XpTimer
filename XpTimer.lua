@@ -27,7 +27,7 @@ XpTimer.consoleOptions = {
 			desc = "Shows the main window",
 			type = 'execute',
 			func = function()
-				message("hello world")
+				XpTimer.MainWindow:Show()
 			end,
 			dialogHidden = true
 		}
@@ -51,14 +51,13 @@ end
 
 function XpTimer:CreateMainWindow()
 
-    local frame = AceGUI:Create("Frame2")
+    local frame = AceGUI:Create("Frame")
     frame:SetTitle("经验统计")
-    --frame:SetStatusText("停止")
-
-    frame:SetCallback("OnClose", function(widget) AceGUI:Release(widget) end)
+    frame:SetStatusText("停止")
+    --frame:SetCallback("OnClose", function(widget) AceGUI:Release(widget) end)
     frame:SetLayout("List")
     frame:SetWidth(42*SCALE_LENGTH)
-    frame:SetHeight(floor(33*SCALE_LENGTH))
+    frame:SetHeight(floor(34*SCALE_LENGTH))
     frame.frame:SetResizable(false)
 
 
@@ -182,7 +181,7 @@ function XpTimer:CreateMainWindow()
     self:ChangeFontSize(XpTimer.speed_icon,12)
     frame:AddChild(XpTimer.speed_icon)
 
-    frame.closebutton:Hide()
+    --frame.closebutton:Hide()
     --frame:Show()
     XpTimer.MainWindow = frame
 end
@@ -194,7 +193,7 @@ function XpTimer:OnStartBtn()
     XpTimer.btn_start:SetDisabled(true)
     XpTimer.btn_stop:SetDisabled(false)
     C_Timer.After(3, XpTimer.TimerFeedback)
-    --XpTimer.MainWindow:SetStatusText("运行中")
+    XpTimer.MainWindow:SetStatusText("运行中")
 
 end
 
@@ -207,7 +206,7 @@ function XpTimer:OnStopBtn()
     XpTimer.current_state = 1
     XpTimer.btn_start:SetDisabled(false)
     XpTimer.btn_stop:SetDisabled(true)
-    --XpTimer.MainWindow:SetStatusText("停止")
+    XpTimer.MainWindow:SetStatusText("停止")
 end
 
 function XpTimer:OnSetTargetBtn()
