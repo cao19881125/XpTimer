@@ -51,6 +51,7 @@ local function MoverSizer_OnMouseUp(mover)
 	status.height = frame:GetHeight()
 	status.top = frame:GetTop()
 	status.left = frame:GetLeft()
+	frame:MoveFinished()
 end
 
 local function SizerSE_OnMouseDown(frame)
@@ -84,7 +85,7 @@ local methods = {
 		self.frame:SetParent(UIParent)
 		self.frame:SetFrameStrata("FULLSCREEN_DIALOG")
 		self:SetTitle()
-		--self:SetStatusText()
+		self:SetStatusText()
 		self:ApplyStatus()
 		self:Show()
         self:EnableResize(true)
@@ -120,9 +121,9 @@ local methods = {
 		self.titlebg:SetWidth((self.titletext:GetWidth() or 0) + 10)
 	end,
 
-	--["SetStatusText"] = function(self, text)
-	--	self.statustext:SetText(text)
-	--end,
+	["SetStatusText"] = function(self, text)
+		self.statustext:SetText(text)
+	end,
 
 	["Hide"] = function(self)
 		self.frame:Hide()
@@ -160,9 +161,9 @@ local methods = {
 		end
 	end,
 
-	--["StatusHide"] = function(self)
-	--	self.statusbg:Hide()
-	--end
+	["StatusHide"] = function(self)
+		self.statusbg:Hide()
+	end
 }
 
 --[[-----------------------------------------------------------------------------
@@ -197,6 +198,8 @@ local function Constructor()
 	frame:SetScript("OnShow", Frame_OnShow)
 	frame:SetScript("OnHide", Frame_OnClose)
 	frame:SetScript("OnMouseDown", Frame_OnMouseDown)
+	--frame["MoveFinished"] = function(this) DEFAULT_CHAT_FRAME:AddMessage("hhhhhhhhhhhh") end
+
 
 	local closebutton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 	closebutton:SetScript("OnClick", Button_OnClick)
@@ -205,22 +208,22 @@ local function Constructor()
 	closebutton:SetWidth(100)
 	closebutton:SetText(CLOSE)
 
-	--local statusbg = CreateFrame("Button", nil, frame)
-	--statusbg:SetPoint("BOTTOMLEFT", 15, 15)
-	--statusbg:SetPoint("BOTTOMRIGHT", -132, 15)
-	--statusbg:SetHeight(24)
-	--statusbg:SetBackdrop(PaneBackdrop)
-	--statusbg:SetBackdropColor(0.1,0.1,0.1)
-	--statusbg:SetBackdropBorderColor(0.4,0.4,0.4)
-	--statusbg:SetScript("OnEnter", StatusBar_OnEnter)
-	--statusbg:SetScript("OnLeave", StatusBar_OnLeave)
-    --
-	--local statustext = statusbg:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	--statustext:SetPoint("TOPLEFT", 7, -2)
-	--statustext:SetPoint("BOTTOMRIGHT", -7, 2)
-	--statustext:SetHeight(20)
-	--statustext:SetJustifyH("LEFT")
-	--statustext:SetText("")
+	local statusbg = CreateFrame("Button", nil, frame)
+	statusbg:SetPoint("BOTTOMLEFT", 15, 15)
+	statusbg:SetPoint("BOTTOMRIGHT", -132, 15)
+	statusbg:SetHeight(24)
+	statusbg:SetBackdrop(PaneBackdrop)
+	statusbg:SetBackdropColor(0.1,0.1,0.1)
+	statusbg:SetBackdropBorderColor(0.4,0.4,0.4)
+	statusbg:SetScript("OnEnter", StatusBar_OnEnter)
+	statusbg:SetScript("OnLeave", StatusBar_OnLeave)
+
+	local statustext = statusbg:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	statustext:SetPoint("TOPLEFT", 7, -2)
+	statustext:SetPoint("BOTTOMRIGHT", -7, 2)
+	statustext:SetHeight(20)
+	statustext:SetJustifyH("LEFT")
+	statustext:SetText("")
 
 	local titlebg = frame:CreateTexture(nil, "OVERLAY")
 	titlebg:SetTexture(131080) -- Interface\\DialogFrame\\UI-DialogBox-Header
@@ -234,6 +237,10 @@ local function Constructor()
 	title:SetScript("OnMouseDown", Title_OnMouseDown)
 	title:SetScript("OnMouseUp", MoverSizer_OnMouseUp)
 	title:SetAllPoints(titlebg)
+    --title:RegisterForDrag("LeftButton")
+    --title:SetScript("OnDragStop",function(this)
+    --    message("hello")
+    --end )
 
 	local titletext = title:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	titletext:SetPoint("TOP", titlebg, "TOP", 0, -14)
@@ -300,7 +307,7 @@ local function Constructor()
 	local widget = {
 		localstatus = {},
 		titletext   = titletext,
-		--statustext  = statustext,
+		statustext  = statustext,
 		titlebg     = titlebg,
 		sizer_se    = sizer_se,
 		sizer_s     = sizer_s,
@@ -308,14 +315,12 @@ local function Constructor()
 		content     = content,
 		frame       = frame,
 		type        = Type,
-		--statusbg	= statusbg,
-		closebutton	= closebutton
+		statusbg	= statusbg
 	}
 	for method, func in pairs(methods) do
 		widget[method] = func
 	end
-	--closebutton.obj, statusbg.obj = widget, widget
-	closebutton.obj = widget
+	closebutton.obj, statusbg.obj = widget, widget
 
 	return AceGUI:RegisterAsContainer(widget)
 end

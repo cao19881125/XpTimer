@@ -30,6 +30,22 @@ XpTimer.consoleOptions = {
 				XpTimer.MainWindow:Show()
 			end,
 			dialogHidden = true
+		},
+        ["pp"] = {
+			order = 13,
+			name = "pp",
+			desc = "Shows the main window",
+			type = 'execute',
+			func = function()
+				--local point, relativeTo, relativePoint, xOfs, yOfs = XpTimer.MainWindow.frame:GetPoint()
+                --DEFAULT_CHAT_FRAME:AddMessage(point)  "BOTTOMRIGHT"
+                --DEFAULT_CHAT_FRAME:AddMessage(relativeTo:GetName())
+                --DEFAULT_CHAT_FRAME:AddMessage(relativePoint)
+                --DEFAULT_CHAT_FRAME:AddMessage(xOfs)
+                --DEFAULT_CHAT_FRAME:AddMessage(yOfs)
+                --XpTimer.MainWindow.frame:SetPoint("BOTTOMRIGHT",-13,24)
+			end,
+			dialogHidden = true
 		}
 	}
 }
@@ -49,17 +65,39 @@ function XpTimer:ChangeFontSize(f,size)
     f.label:SetFont(Font, size, Flags)
 end
 
+local Default_Profile = {
+    profile = {
+        MainWindow = {
+            Position = {
+				point = "CENTER",
+                x = 0,
+                y = 0
+			}
+        }
+    }
+}
+
+function XpTimer:OnDragStop(frame)
+    local point, relativeTo, relativePoint, xOfs, yOfs = XpTimer.MainWindow.frame:GetPoint()
+    XpTimer.db.profile.MainWindow.Position.point = point
+    XpTimer.db.profile.MainWindow.Position.x = xOfs
+    XpTimer.db.profile.MainWindow.Position.y = yOfs
+end
+
 function XpTimer:CreateMainWindow()
 
-    local frame = AceGUI:Create("Frame")
+    local frame = AceGUI:Create("Frame2")
     frame:SetTitle("经验统计")
     frame:SetStatusText("停止")
     --frame:SetCallback("OnClose", function(widget) AceGUI:Release(widget) end)
     frame:SetLayout("List")
     frame:SetWidth(42*SCALE_LENGTH)
     frame:SetHeight(floor(34*SCALE_LENGTH))
+    --frame.frame:SetScript("OnDragStart",function(this)
+    --    message("hello")
+    --end )
     frame.frame:SetResizable(false)
-
+    frame.frame["MoveFinished"] = XpTimer.OnDragStop
 
     -- control group
 
@@ -231,11 +269,22 @@ function XpTimer:TimerFeedback()
 end
 
 
+
 function XpTimer:OnInitialize()
+
+    local acedb = LibStub("AceDB-3.0")
+
+    XpTimer.db = acedb:New("XpTimerDB",Default_Profile)
+
+    --message(self.db.profile.MainWindow.Position.x)
+    --self.db.profile.MainWindow.Position.x = 101
+    --self.db.profile.MainWindow.Position.y = 9999
 
     LibStub("AceConfig-3.0"):RegisterOptionsTable("XpTimer Blizz", XpTimer.consoleOptions,"XpTimer")
     XpTimer:CreateMainWindow()
-
+    XpTimer.MainWindow.frame:SetPoint(self.db.profile.MainWindow.Position.point,
+            self.db.profile.MainWindow.Position.x,
+            self.db.profile.MainWindow.Position.y)
     XpTimer.MainWindow:Show()
     XpTimer.current_state = 1
 end
