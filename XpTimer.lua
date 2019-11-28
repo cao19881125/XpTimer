@@ -6,6 +6,7 @@ local AceGUI = LibStub("AceGUI-3.0")
 
 local CreateFrame = CreateFrame
 
+
 XpTimer.events = CreateFrame("Frame")
 
 XpTimer.events:SetScript("OnEvent", function(self, event, ...)
@@ -73,6 +74,9 @@ local Default_Profile = {
                 x = 0,
                 y = 0
 			}
+        },
+        History = {
+
         }
     }
 }
@@ -82,6 +86,14 @@ function XpTimer:OnDragStop(frame)
     XpTimer.db.profile.MainWindow.Position.point = point
     XpTimer.db.profile.MainWindow.Position.x = xOfs
     XpTimer.db.profile.MainWindow.Position.y = yOfs
+end
+
+function XpTimer:OnHisShow()
+    XpTimer:CreateHistoryWindow()
+
+    XpTimer:HistoryShow(XpTimer.db.profile.History)
+
+    XpTimer.HistoryWindow:Show()
 end
 
 function XpTimer:CreateMainWindow()
@@ -98,6 +110,7 @@ function XpTimer:CreateMainWindow()
     --end )
     frame.frame:SetResizable(false)
     frame.frame["MoveFinished"] = XpTimer.OnDragStop
+    frame.frame["OnHisButton"] = XpTimer.OnHisShow
 
     -- control group
 
@@ -246,6 +259,8 @@ function XpTimer:OnStopBtn()
     XpTimer.btn_start:SetDisabled(false)
     XpTimer.btn_stop:SetDisabled(true)
     XpTimer.MainWindow:SetStatusText("停止")
+
+    XpTimer:SaveCurrentData()
 end
 
 function XpTimer:OnSetTargetBtn()
@@ -253,6 +268,7 @@ function XpTimer:OnSetTargetBtn()
     XpTimer.target_exp = tonumber(target)
     XpTimer.target_label:SetText(string.format("目标:%d",XpTimer.target_exp))
 end
+
 
 function XpTimer:TimerFeedback()
 
@@ -281,6 +297,7 @@ function XpTimer:OnInitialize()
     --self.db.profile.MainWindow.Position.x = 101
     --self.db.profile.MainWindow.Position.y = 9999
 
+
     LibStub("AceConfig-3.0"):RegisterOptionsTable("XpTimer Blizz", XpTimer.consoleOptions,"XpTimer")
     XpTimer:CreateMainWindow()
     XpTimer.MainWindow.frame:SetPoint(self.db.profile.MainWindow.Position.point,
@@ -288,6 +305,8 @@ function XpTimer:OnInitialize()
             self.db.profile.MainWindow.Position.y)
     XpTimer.MainWindow:Show()
     XpTimer.current_state = 1
+
+
 end
 
 function XpTimer:OnEnable()
@@ -313,12 +332,37 @@ end
 
 function XpTimer:init_data()
     XpTimer.start_time = GetTime()
+    XpTimer.start_time_t = date("%y/%m/%d %H:%M")
     XpTimer.start_exp = UnitXP("player")
     XpTimer.max_exp = UnitXPMax("player")
     XpTimer.current_level = UnitLevel("player")
     XpTimer.all_exp = 0
     XpTimer.kill_num = 0
 
+end
+
+function XpTimer:SaveCurrentData()
+
+    local current_data = {}
+    local current_time = GetTime()
+    current_data["time"] = XpTimer.start_time_t
+    current_data["place"] = GetZoneText()
+    current_data["time_long"] = floor(current_time - XpTimer.start_time)
+    current_data["level"] = XpTimer.current_level
+    current_data["exp"] = XpTimer.all_exp
+    current_data["kill_num"] = XpTimer.kill_num
+
+
+    local seconds = current_time - XpTimer.start_time
+    local speed_exp_second = (XpTimer.all_exp/seconds)
+    speed_exp_second = speed_exp_second * 100
+    speed_exp_second = floor(speed_exp_second + 0.5)
+    speed_exp_second = speed_exp_second/100
+    local speed_exp_hour = speed_exp_second*3600
+
+    current_data["exp_speed"] = speed_exp_hour
+
+    table.insert(XpTimer.db.profile.History,1,current_data)
 end
 
 function XpTimer:Frame_update()

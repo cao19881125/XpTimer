@@ -25,6 +25,11 @@ local function Button_OnClick(frame)
 	frame.obj:Hide()
 end
 
+local function HisButton_OnClick(btn)
+	local frame = btn:GetParent()
+	frame:OnHisButton()
+end
+
 local function Frame_OnShow(frame)
 	frame.obj:Fire("OnShow")
 end
@@ -200,12 +205,18 @@ local function Constructor()
 	frame:SetScript("OnMouseDown", Frame_OnMouseDown)
 	--frame["MoveFinished"] = function(this) DEFAULT_CHAT_FRAME:AddMessage("hhhhhhhhhhhh") end
 
+	local hisbutton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+	hisbutton:SetScript("OnClick", HisButton_OnClick)
+	hisbutton:SetPoint("BOTTOMRIGHT", -77, 17)
+	hisbutton:SetHeight(20)
+	hisbutton:SetWidth(50)
+	hisbutton:SetText("历史")
 
 	local closebutton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 	closebutton:SetScript("OnClick", Button_OnClick)
 	closebutton:SetPoint("BOTTOMRIGHT", -27, 17)
 	closebutton:SetHeight(20)
-	closebutton:SetWidth(100)
+	closebutton:SetWidth(50)
 	closebutton:SetText(CLOSE)
 
 	local statusbg = CreateFrame("Button", nil, frame)
