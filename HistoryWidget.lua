@@ -31,7 +31,7 @@ function XpTimer:GetHisRow(data)
     title_group:AddChild(place_label)
 
     local time_long_label = AceGUI:Create("Label")
-    time_long_label:SetText(string.format("%d分%d秒",floor(data["time_long"]/60),floor(data["time_long"]%60)))
+    time_long_label:SetText(data["time_long"])
     time_long_label:SetWidth(8*SCALE_LENGTH)
     title_group:AddChild(time_long_label)
 
@@ -113,6 +113,8 @@ function XpTimer:HistoryShow(data_array)
     local an = table.getn(data_array)
     XpTimer.HistoryWindow:SetStatusText(string.format("总条数:%d",an))
     for i= 1, an do
+        data_array[i]["time_long"] = string.format("%d分%d秒",
+                floor(data_array[i]["time_long"]/60),floor(data_array[i]["time_long"]%60))
         XpTimer:AddHistoryData(data_array[i])
     end
 end
