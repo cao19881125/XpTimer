@@ -240,11 +240,16 @@ end
 
 function XpTimer:OnStartBtn()
 
+    if(XpTimer.target_exp == 0)then
+        message("请先设置目标经验速度")
+        return
+    end
+
     XpTimer.init_data()
     XpTimer.current_state = 2 -- 1:停止 2：运行中
     XpTimer.btn_start:SetDisabled(true)
     XpTimer.btn_stop:SetDisabled(false)
-    C_Timer.After(3, XpTimer.TimerFeedback)
+    --C_Timer.After(3, XpTimer.TimerFeedback)
     XpTimer.MainWindow:SetStatusText("运行中")
 
 end
@@ -270,22 +275,38 @@ function XpTimer:OnSetTargetBtn()
 end
 
 
-function XpTimer:TimerFeedback()
+--function XpTimer:TimerFeedback()
+--
+--    if(XpTimer.current_state == 1)then
+--        return
+--    end
+--
+--
+--    XpTimer:Frame_update()
+--
+--
+--    if(XpTimer.current_state == 2)then
+--        C_Timer.After(3, XpTimer.TimerFeedback)
+--    end
+--end
 
-    if(XpTimer.current_state == 1)then
+
+function XpTimer:OnUpdate()
+    if(XpTimer.current_state ~= 2)then
         return
     end
-    
+
+
+    local current_time = GetTime()
+
+    if((current_time - XpTimer.last_update_time) < 2 ) then
+        return
+    end
 
     XpTimer:Frame_update()
 
-
-    if(XpTimer.current_state == 2)then
-        C_Timer.After(3, XpTimer.TimerFeedback)
-    end
+    XpTimer.last_update_time = current_time
 end
-
-
 
 function XpTimer:OnInitialize()
 
@@ -305,8 +326,8 @@ function XpTimer:OnInitialize()
             self.db.profile.MainWindow.Position.y)
     XpTimer.MainWindow:Show()
     XpTimer.current_state = 1
-
-
+    XpTimer.target_exp = 0
+    XpTimer.events:SetScript("OnUpdate",XpTimer.OnUpdate)
 end
 
 function XpTimer:OnEnable()
@@ -338,7 +359,7 @@ function XpTimer:init_data()
     XpTimer.current_level = UnitLevel("player")
     XpTimer.all_exp = 0
     XpTimer.kill_num = 0
-
+    XpTimer.last_update_time = GetTime()
 end
 
 function XpTimer:SaveCurrentData()
