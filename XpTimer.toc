@@ -2,7 +2,7 @@
 ## Title: XpTimer
 ## Notes: A plugin to timing your gain experience speed
 ## Author: YuntaoCao
-## Version: 1.0
+## Version: 1.2
 ## SavedVariables: XpTimerDB
 
 embeds.xml

@@ -31,7 +31,7 @@ function XpTimer:GetHisRow(data)
     title_group:AddChild(place_label)
 
     local time_long_label = AceGUI:Create("Label")
-    time_long_label:SetText(data["time_long"])
+    time_long_label:SetText(string.format("%d分%d秒",floor(data["time_long"]/60),floor(data["time_long"]%60)))
     time_long_label:SetWidth(8*SCALE_LENGTH)
     title_group:AddChild(time_long_label)
 
@@ -122,7 +122,7 @@ function XpTimer:FillTestData()
         local test_array = {
             ["time"] = date("%y/%m/%d %H:%M"),
             ["place"] = "血色修道院",
-            ["time_long"] = string.format("%d分%d秒",floor(1000/60),floor(1000%60)),
+            ["time_long"] = 1000,
             ["level"] = string.format("%d",24),
             ["exp"] = string.format("%d",123456),
             ["kill_num"] = string.format("%d",24),
