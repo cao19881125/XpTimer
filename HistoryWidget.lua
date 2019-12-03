@@ -113,9 +113,11 @@ function XpTimer:HistoryShow(data_array)
     local an = table.getn(data_array)
     XpTimer.HistoryWindow:SetStatusText(string.format("总条数:%d",an))
     for i= 1, an do
+	local time_long_temp = data_array[i]["time_long"]
         data_array[i]["time_long"] = string.format("%d分%d秒",
                 floor(data_array[i]["time_long"]/60),floor(data_array[i]["time_long"]%60))
         XpTimer:AddHistoryData(data_array[i])
+	data_array[i]["time_long"] = time_long_temp
     end
 end
 
