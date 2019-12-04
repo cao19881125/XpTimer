@@ -9,3 +9,4 @@ embeds.xml
 
 XpTimer.lua
 HistoryWidget.lua
+utils.lua

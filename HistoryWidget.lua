@@ -15,6 +15,8 @@ local SCALE_LENGTH = 10
 --    DEFAULT_CHAT_FRAME:AddMessage(test_array[i])
 --end
 
+
+
 function XpTimer:GetHisRow(data)
     local title_group = AceGUI:Create("SimpleGroup")
     title_group:SetLayout("Flow")
@@ -113,9 +115,10 @@ function XpTimer:HistoryShow(data_array)
     local an = table.getn(data_array)
     XpTimer.HistoryWindow:SetStatusText(string.format("总条数:%d",an))
     for i= 1, an do
-        data_array[i]["time_long"] = string.format("%d分%d秒",
+        local temp_data = deepcopy(data_array[i])
+        temp_data["time_long"] = string.format("%d分%d秒",
                 floor(data_array[i]["time_long"]/60),floor(data_array[i]["time_long"]%60))
-        XpTimer:AddHistoryData(data_array[i])
+        XpTimer:AddHistoryData(temp_data)
     end
 end
 
