@@ -253,6 +253,7 @@ function XpTimer:OnEnable()
     XpTimer.events:RegisterEvent("PLAYER_XP_UPDATE")
     XpTimer.events:RegisterEvent("PLAYER_LEVEL_UP")
     XpTimer.events:RegisterEvent("CHAT_MSG_COMBAT_XP_GAIN")
+    XpTimer.events:RegisterEvent("PLAYER_LOGOUT")
 
 end
 
@@ -267,6 +268,12 @@ function XpTimer:PLAYER_ENTERING_WORLD()
     --XpTimer:init_data()
     --
     --message(XpTimer.start_time)
+end
+
+function XpTimer:PLAYER_LOGOUT()
+    if(XpTimer.current_state == 2)then
+        XpTimer:OnStopBtn()
+    end
 end
 
 function XpTimer:init_data()
