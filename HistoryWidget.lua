@@ -20,7 +20,7 @@ local SCALE_LENGTH = 10
 function XpTimer:GetHisRow(data)
     local title_group = AceGUI:Create("SimpleGroup")
     title_group:SetLayout("Flow")
-    title_group:SetWidth(floor(68*SCALE_LENGTH))
+    title_group:SetWidth(floor(86*SCALE_LENGTH))
 
     local time_label = AceGUI:Create("Label")
     time_label:SetText(data["time"])
@@ -57,6 +57,16 @@ function XpTimer:GetHisRow(data)
     exp_speed_label:SetWidth(9*SCALE_LENGTH)
     title_group:AddChild(exp_speed_label)
 
+    local money_label = AceGUI:Create("Label")
+    money_label:SetText(data["money_up"])
+    money_label:SetWidth(9*SCALE_LENGTH)
+    title_group:AddChild(money_label)
+
+    local money_speed = AceGUI:Create("Label")
+    money_speed:SetText(data["money_speed"])
+    money_speed:SetWidth(9*SCALE_LENGTH)
+    title_group:AddChild(money_speed)
+
     return title_group
 end
 
@@ -72,7 +82,7 @@ function XpTimer:CreateHistoryWindow()
     local frame = AceGUI:Create("Frame")
     frame:SetTitle("历史数据")
     frame:SetLayout("List")
-    frame:SetWidth(70*SCALE_LENGTH)
+    frame:SetWidth(88*SCALE_LENGTH)
     frame:SetHeight(40*SCALE_LENGTH)
 
     -- add title
@@ -83,7 +93,9 @@ function XpTimer:CreateHistoryWindow()
         ["level"] = "等级",
         ["exp"] = "经验",
         ["kill_num"] = "击杀数量",
-        ["exp_speed"] = "经验/小时"
+        ["exp_speed"] = "经验/小时",
+        ["money_up"] = "获取金币",
+        ["money_speed"] = "金币/小时"
     }
 
     local title_row = XpTimer:GetHisRow(title_array)
@@ -92,7 +104,7 @@ function XpTimer:CreateHistoryWindow()
 
     local ScrollArea = AceGUI:Create("SimpleGroup")
     ScrollArea:SetLayout("Fill")
-    ScrollArea:SetWidth(66*SCALE_LENGTH)
+    ScrollArea:SetWidth(86*SCALE_LENGTH)
     ScrollArea:SetHeight(31*SCALE_LENGTH)
     frame:AddChild(ScrollArea)
 
@@ -118,6 +130,10 @@ function XpTimer:HistoryShow(data_array)
         local temp_data = deepcopy(data_array[i])
         temp_data["time_long"] = string.format("%d分%d秒",
                 floor(data_array[i]["time_long"]/60),floor(data_array[i]["time_long"]%60))
+        local money_up = temp_data["money_up"] and temp_data["money_up"] or 0
+        local money_speed = temp_data["money_speed"] and temp_data["money_speed"] or 0
+        temp_data["money_up"] = string.format("%d金%d银",floor(money_up/10000),floor(money_up/100%100))
+        temp_data["money_speed"] = string.format("%d金/小时",floor(money_speed*3600/10000))
         XpTimer:AddHistoryData(temp_data)
     end
 end

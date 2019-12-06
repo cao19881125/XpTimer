@@ -103,7 +103,7 @@ function XpTimer:CreateMainWindow()
     frame:SetStatusText("停止")
     frame:SetLayout("List")
     frame:SetWidth(42*SCALE_LENGTH)
-    frame:SetHeight(floor(32*SCALE_LENGTH))
+    frame:SetHeight(floor(34*SCALE_LENGTH))
     frame.frame:SetResizable(false)
     frame.frame["MoveFinished"] = XpTimer.OnDragStop
     frame.frame["OnHisButton"] = XpTimer.OnHisShow
@@ -173,6 +173,12 @@ function XpTimer:CreateMainWindow()
 
     XpTimer:insert_space(frame)
 
+    XpTimer.money_label =  AceGUI:Create("Label")
+    XpTimer.money_label:SetText("获取金币:0 小时速度:0")
+    XpTimer.money_label:SetWidth(36*SCALE_LENGTH)
+    self:ChangeFontSize(XpTimer.money_label,LABEL_SIZE)
+    frame:AddChild(XpTimer.money_label)
+
     XpTimer.speed_icon = AceGUI:Create("Icon")
     XpTimer.speed_icon:SetImage("Interface\\AddOns\\XpTimer\\textures\\gray")
     XpTimer.speed_icon.image:SetPoint("BOTTOMLEFT", 0, 0)
@@ -195,7 +201,6 @@ function XpTimer:OnStartBtn()
     XpTimer.btn_start:SetDisabled(true)
     XpTimer.btn_stop:SetDisabled(false)
     XpTimer.MainWindow:SetStatusText("运行中")
-
 end
 
 
@@ -284,7 +289,10 @@ function XpTimer:init_data()
     XpTimer.current_level = UnitLevel("player")
     XpTimer.all_exp = 0
     XpTimer.kill_num = 0
+    XpTimer.start_money = GetMoney()
     XpTimer.last_update_time = GetTime()
+    XpTimer.money_up = 0
+    XpTimer.money_speed = 0
 end
 
 function XpTimer:SaveCurrentData()
@@ -297,6 +305,8 @@ function XpTimer:SaveCurrentData()
     current_data["level"] = XpTimer.current_level
     current_data["exp"] = XpTimer.all_exp
     current_data["kill_num"] = XpTimer.kill_num
+    current_data["money_up"] = XpTimer.money_up
+    current_data["money_speed"] = XpTimer.money_speed
 
 
     local seconds = current_time - XpTimer.start_time
@@ -361,12 +371,16 @@ function XpTimer:Frame_update()
     end
 
 
+    -- money
+    XpTimer.money_up = GetMoney() - XpTimer.start_money
+    XpTimer.money_speed = floor(XpTimer.money_up/seconds)
+
     -- update frame
     XpTimer.time_label:SetText(string.format("累计时间:%d分%d秒",ret_minutes,ret_seconds))
     XpTimer.accumulate_label:SetText(string.format("累计经验:%d 击杀数量:%d",XpTimer.all_exp,XpTimer.kill_num))
     XpTimer.update_level_label:SetText(string.format("升级时间:%d分 剩余经验:%d",time_to_up_min,(XpTimer.max_exp - current_exp)))
     XpTimer.averge_label:SetText(string.format("每怪经验:%d 剩余怪数:%d",averge_exp,require_num))
-
+    XpTimer.money_label:SetText(string.format("获取金币:%.2f 小时速度:%dG",XpTimer.money_up/10000,floor(XpTimer.money_speed*3600/10000)))
 
     local icon_img = ""
 
