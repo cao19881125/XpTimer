@@ -259,6 +259,7 @@ function XpTimer:OnEnable()
     XpTimer.events:RegisterEvent("PLAYER_LEVEL_UP")
     XpTimer.events:RegisterEvent("CHAT_MSG_COMBAT_XP_GAIN")
     XpTimer.events:RegisterEvent("PLAYER_LOGOUT")
+    XpTimer.events:RegisterEvent("PLAYER_MONEY")
 
 end
 
@@ -372,7 +373,7 @@ function XpTimer:Frame_update()
 
 
     -- money
-    XpTimer.money_up = GetMoney() - XpTimer.start_money
+    --XpTimer.money_up = GetMoney() - XpTimer.start_money
     XpTimer.money_speed = floor(XpTimer.money_up/seconds)
 
     -- update frame
@@ -432,5 +433,18 @@ function XpTimer:CHAT_MSG_COMBAT_XP_GAIN()
     end
     XpTimer.kill_num = XpTimer.kill_num + 1
     XpTimer:Frame_update()
+end
+
+function XpTimer:PLAYER_MONEY()
+    if (XpTimer.current_state ~= 2) then
+        return
+    end
+
+    local current_monet = GetMoney()
+    if(current_monet > XpTimer.start_money)then
+        XpTimer.money_up = XpTimer.money_up + current_monet - XpTimer.start_money
+    end
+
+    XpTimer.start_money = current_monet
 end
 
