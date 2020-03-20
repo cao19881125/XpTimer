@@ -255,17 +255,24 @@ end
 
 function XpTimer:OnEnable()
     XpTimer.events:RegisterEvent("PLAYER_ENTERING_WORLD")
-    XpTimer.events:RegisterEvent("PLAYER_XP_UPDATE")
-    XpTimer.events:RegisterEvent("PLAYER_LEVEL_UP")
-    XpTimer.events:RegisterEvent("CHAT_MSG_COMBAT_XP_GAIN")
     XpTimer.events:RegisterEvent("PLAYER_LOGOUT")
     XpTimer.events:RegisterEvent("PLAYER_MONEY")
+
+    local plevel = UnitLevel("player")
+    if(plevel < 60)then
+        XpTimer.events:RegisterEvent("PLAYER_XP_UPDATE")
+        XpTimer.events:RegisterEvent("PLAYER_LEVEL_UP")
+        XpTimer.events:RegisterEvent("CHAT_MSG_COMBAT_XP_GAIN")
+    elseif(plevel >= 60)then
+        XpTimer.events:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+    end
 
 end
 
 function XpTimer:OnDisable()
 
 end
+
 
 function XpTimer:PLAYER_ENTERING_WORLD()
     --local current_xp = UnitXP("player")
@@ -420,11 +427,45 @@ end
 
 
 function XpTimer:PLAYER_LEVEL_UP()
+
+    local plevel = UnitLevel("player")
+    if(plevel >= 60)then
+        XpTimer.events:UnregisterEvent("PLAYER_XP_UPDATE")
+        XpTimer.events:UnregisterEvent("PLAYER_LEVEL_UP")
+        XpTimer.events:UnregisterEvent("CHAT_MSG_COMBAT_XP_GAIN")
+        XpTimer.events:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+    end
+
     if (XpTimer.current_state ~= 2) then
         return
     end
 
     XpTimer:Frame_update()
+end
+
+function XpTimer:ParseLog(timestamp, eventtype, hideCaster, srcGUID, srcName, srcFlags, srcRaidFlags, dstGUID, dstName, dstFlags, dstRaidFlags, ...)
+    local my_guid = UnitGUID("player")
+
+    local my_action = true
+    if(srcGUID ~= my_guid)then
+        return nil
+    end
+
+
+    if(eventtype == "PARTY_KILL")then
+        -- this event means the player self kill someone
+        XpTimer.kill_num = XpTimer.kill_num + 1
+        XpTimer:Frame_update()
+    end
+
+end
+
+function XpTimer:COMBAT_LOG_EVENT_UNFILTERED()
+    if (XpTimer.current_state ~= 2) then
+        return
+    end
+
+    XpTimer:ParseLog(CombatLogGetCurrentEventInfo())
 end
 
 function XpTimer:CHAT_MSG_COMBAT_XP_GAIN()
