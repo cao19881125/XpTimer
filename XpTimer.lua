@@ -118,17 +118,23 @@ function XpTimer:CreateMainWindow()
 
     XpTimer.btn_start = AceGUI:Create("Button")
     XpTimer.btn_start:SetText("开始")
-    XpTimer.btn_start:SetWidth(floor(17*SCALE_LENGTH))
+    XpTimer.btn_start:SetWidth(floor(11*SCALE_LENGTH))
     XpTimer.btn_start:SetCallback("OnClick", XpTimer.OnStartBtn)
     ctl_btn_group:AddChild(XpTimer.btn_start)
 
     XpTimer.btn_stop = AceGUI:Create("Button")
     XpTimer.btn_stop:SetText("结束")
-    XpTimer.btn_stop:SetWidth(floor(17*SCALE_LENGTH))
+    XpTimer.btn_stop:SetWidth(floor(11*SCALE_LENGTH))
     XpTimer.btn_stop:SetCallback("OnClick", XpTimer.OnStopBtn)
     XpTimer.btn_stop:SetDisabled(true)
     ctl_btn_group:AddChild(XpTimer.btn_stop)
 
+    XpTimer.btn_notify = AceGUI:Create("Button")
+    XpTimer.btn_notify:SetText("通报")
+    XpTimer.btn_notify:SetWidth(floor(11*SCALE_LENGTH))
+    XpTimer.btn_notify:SetCallback("OnClick", XpTimer.OnNotifyBtn)
+    --XpTimer.btn_notify:SetDisabled(true)
+    ctl_btn_group:AddChild(XpTimer.btn_notify)
 
 
     XpTimer:insert_space(frame)
@@ -200,6 +206,7 @@ function XpTimer:OnStartBtn()
     XpTimer.current_state = 2 -- 1:停止 2：运行中
     XpTimer.btn_start:SetDisabled(true)
     XpTimer.btn_stop:SetDisabled(false)
+    XpTimer.btn_notify:SetDisabled(true)
     XpTimer.MainWindow:SetStatusText("运行中")
 end
 
@@ -208,12 +215,27 @@ function XpTimer:OnStopBtn()
     XpTimer.current_state = 1
     XpTimer.btn_start:SetDisabled(false)
     XpTimer.btn_stop:SetDisabled(true)
+    XpTimer.btn_notify:SetDisabled(false)
     XpTimer.MainWindow:SetStatusText("停止")
 
     XpTimer:SaveCurrentData()
 end
 
+function XpTimer:OnNotifyBtn()
+    XpTimer:GroupNotify()
+end
 
+function XpTimer:GroupNotify()
+
+    local data = XpTimer.db.profile.History[1]
+    if(data == nil) then
+        return
+    end
+    local notify_str = "战斗通报:用时" .. string.format("%d分%d秒",
+                floor(data["time_long"]/60),floor(data["time_long"]%60)) ..
+                " 获取经验:" .. data["exp"] .. " 击杀数量:" .. data["kill_num"] .. " 经验/小时:" .. data["exp_speed"]
+    _G.SendChatMessage(notify_str,"PARTY",nil,nil)
+end
 
 function XpTimer:OnUpdate()
     if(XpTimer.current_state ~= 2)then
